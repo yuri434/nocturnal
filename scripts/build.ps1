@@ -5,7 +5,7 @@ if (!(Test-Path -LiteralPath $compiler)) { $compiler = Join-Path $env:WINDIR 'Mi
 if (!(Test-Path -LiteralPath $compiler)) { throw '.NET Framework C# compiler not found.' }
 $dist = Join-Path $projectRoot 'dist'
 New-Item -ItemType Directory -Force -Path $dist | Out-Null
-$sourceFiles = @('Engine.cs','ClassicWindow.cs','TransferFeatures.cs','CategoryFolders.cs','AppBrand.cs','DownloadErrors.cs') | ForEach-Object { Join-Path $projectRoot ('src\' + $_) }
+$sourceFiles = @('Engine.cs','ClassicWindow.cs','TransferFeatures.cs','CategoryFolders.cs','AppBrand.cs','DownloadErrors.cs','MediaConverter.cs') | ForEach-Object { Join-Path $projectRoot ('src\' + $_) }
 $icon = Join-Path $projectRoot 'assets\nocturnal.ico'
 $output = Join-Path $dist 'Nocturnal.exe'
 & $compiler /nologo /target:winexe /main:Program "/out:$output" "/win32icon:$icon" "/resource:$icon,logo" /r:System.Net.Http.dll /r:System.Web.Extensions.dll /r:System.Drawing.dll /r:System.Windows.Forms.dll @sourceFiles
