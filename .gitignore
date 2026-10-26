@@ -1,0 +1,12 @@
+dist/
+tools/
+*.fastget.*
+*.fluxpart
+queue.json
+incoming/
+backups/
+*.tmp
+*.log
+.vs/
+bin/
+obj/

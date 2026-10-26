@@ -1,0 +1,5 @@
+NOCTURNAL FIREFOX 0.7.0
+Clique com o botão direito em um link, vídeo ou áudio e escolha Baixar com Nocturnal. Na tela seguinte, clique em Abrir no Nocturnal e confirme no Firefox. A extensão não confirma o recebimento pelo aplicativo.
+Sem botão flutuante, captura automática de cliques ou scripts injetados nos sites. Permissões: contextMenus, activeTab, storage. Quando um vídeo usa blob:, o envio usa a página para o motor de mídia do aplicativo.
+MP3, qualidade e destino são escolhidos no app. Alguns sites exigem login ou não permitem captura. O ZIP precisa ser enviado como atualização da mesma extensão na Mozilla para obter assinatura e instalação permanente.
+Fonte legível, sem compilação ou minificação. Identificador preservado: fastget-local@example.invalid.
