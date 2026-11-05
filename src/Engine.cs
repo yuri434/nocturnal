@@ -28,6 +28,7 @@ public class Job
 {
  public int LimitKBps;
  public bool ForceSingle;
+ public bool Clip; public double ClipStart,ClipEnd;
  [ScriptIgnore] public long[] ConnectionDone = new long[8];
  [ScriptIgnore] public string[] ConnectionState = new string[8];
  [ScriptIgnore] public BandwidthGate Gate = new BandwidthGate();
@@ -67,6 +68,13 @@ public class Job
 
 	[ScriptIgnore]
 	public bool Running;
+}
+public static class ClipRange {
+ public static double Parse(string text){
+  var parts=(text??"").Trim().Replace(',', '.').Split(':');if(parts.Length<1||parts.Length>3)throw new Exception("Use segundos, MM:SS ou HH:MM:SS.");double total=0;for(int i=0;i<parts.Length;i++){double value;if(!System.Text.RegularExpressions.Regex.IsMatch(parts[i],i==parts.Length-1?@"^\d+(?:\.\d{1,3})?$":@"^\d+$")||!double.TryParse(parts[i],System.Globalization.NumberStyles.AllowDecimalPoint,System.Globalization.CultureInfo.InvariantCulture,out value)||value<0||(parts.Length>1&&i>0&&value>=60))throw new Exception("Tempo inválido. Use MM:SS ou HH:MM:SS.");total=total*60+value;}if(total>359999)throw new Exception("O tempo máximo é 99:59:59.");return total;
+ }
+ public static void Validate(Job j){if(!j.Clip)return;if(!j.Video||double.IsNaN(j.ClipStart)||double.IsInfinity(j.ClipStart)||double.IsNaN(j.ClipEnd)||double.IsInfinity(j.ClipEnd)||j.ClipStart<0||j.ClipEnd<=j.ClipStart||j.ClipEnd>359999)throw new Exception("O fim do trecho precisa ser maior que o início. Escolha Vídeo MP4 ou Áudio MP3.");}
+ public static string Options(Job j){Validate(j);return !j.Clip?"":" --download-sections "+Engine.Quote("*"+j.ClipStart.ToString("0.###",System.Globalization.CultureInfo.InvariantCulture)+"-"+j.ClipEnd.ToString("0.###",System.Globalization.CultureInfo.InvariantCulture))+" --force-keyframes-at-cuts";}
 }
 public class Engine
 {
@@ -300,7 +308,8 @@ public class Engine
 
 	public static async Task Video(Job j, CancellationToken ct)
 	{
-		j.Path = Path.ChangeExtension(j.Path, j.AudioOnly ? "mp3" : "mp4");
+		ClipRange.Validate(j);
+        j.Path = Path.ChangeExtension(j.Path, j.AudioOnly ? "mp3" : "mp4");
 		try
 		{
 			await VideoAttempt(j, ct, "");
@@ -328,7 +337,7 @@ public class Engine
 		string tools = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tools");
 		ProcessStartInfo info = new ProcessStartInfo(Path.Combine(tools, "yt-dlp.exe"))
 		{
-			Arguments = "--ignore-config --no-playlist --newline --no-colors --continue --windows-filenames --no-overwrites --socket-timeout 20 --js-runtimes " + Quote("deno:" + Path.Combine(tools, "deno.exe")) + " --ffmpeg-location " + Quote(tools) + " -N 8 " + (j.LimitKBps > 0 ? " --limit-rate " + j.LimitKBps + "K " : "") + MediaOptions(j) + " -o " + Quote(OutputTemplate(j)) + extra + " -- " + Quote(j.Url),
+			Arguments = "--ignore-config --no-playlist --newline --no-colors --continue --windows-filenames --no-overwrites --socket-timeout 20 --js-runtimes " + Quote("deno:" + Path.Combine(tools, "deno.exe")) + " --ffmpeg-location " + Quote(tools) + " -N 8 " + (j.LimitKBps > 0 ? " --limit-rate " + j.LimitKBps + "K " : "") + MediaOptions(j) + ClipRange.Options(j) + " -o " + Quote(OutputTemplate(j)) + extra + " -- " + Quote(j.Url),
 			UseShellExecute = false,
 			CreateNoWindow = true,
 			RedirectStandardOutput = true,
@@ -493,3 +502,4 @@ public class Program
 		}
 	}
 }
+

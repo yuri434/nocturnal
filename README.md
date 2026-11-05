@@ -14,6 +14,8 @@ Os novos downloads são separados em pastas por tipo: Música, Vídeos, Document
 
 A janela de progresso abre ao iniciar o download. Nela, dá para pausar, continuar, limitar a velocidade e ver os detalhes das conexões. Em **Opções**, você escolhe quantos downloads podem rodar ao mesmo tempo. A retomada depende do suporte do servidor.
 
+Para salvar apenas um momento, escolha **Vídeo MP4** ou **Áudio MP3**, marque **Baixar somente um trecho** e informe **Início** e **Fim**. Por exemplo, `01:20` até `01:50` gera um clipe de 30 segundos. Os tempos podem ser em segundos, `MM:SS` ou `HH:MM:SS`. O recorte depende do site e é indicado para vídeos gravados.
+
 ## Conversor de vídeo e áudio
 
 Abra **Ferramentas → Converter vídeo e áudio**, clique em **Converter** na barra ou use **Ctrl+K**. Escolha um arquivo do computador, o formato e onde salvar. Também dá para clicar com o botão direito em um download concluído e escolher **Converter arquivo…**.
@@ -22,7 +24,7 @@ Os formatos de saída são MP4, MKV, WebM, MP3, M4A, WAV, FLAC e OGG. É possív
 
 ## Instalação
 
-Para reparar ou atualizar uma instalação, baixe **Nocturnal-0.21.exe** na [página de lançamentos](https://github.com/yuri434/nocturnal/releases/latest), feche o Nocturnal e execute o atualizador. Ele funciona mesmo se `Nocturnal.exe` tiver sido removido e cria um backup antes de substituir o aplicativo. A fila e as ferramentas existentes são preservadas.
+Para reparar ou atualizar uma instalação, baixe **Nocturnal-0.22.exe** na [página de lançamentos](https://github.com/yuri434/nocturnal/releases/latest), feche o Nocturnal e execute o atualizador. Ele funciona mesmo se `Nocturnal.exe` tiver sido removido e cria um backup antes de substituir o aplicativo. A fila e as ferramentas existentes são preservadas.
 
 No Windows 10 ou 11, com .NET Framework 4.8 instalado, abra o PowerShell na pasta do projeto e execute:
 
