@@ -438,7 +438,7 @@ public class Engine
 
 	public static string OutputTemplate(Job j)
 	{
-		return Path.ChangeExtension(j.Path, "%(ext)s");
+		return Path.ChangeExtension(j.Path, null).Replace("%", "%%") + ".%(ext)s";
 	}
 }
 public class Program
@@ -502,4 +502,5 @@ public class Program
 		}
 	}
 }
+
 

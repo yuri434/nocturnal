@@ -10,6 +10,8 @@ Uma alternativa open source ao Internet Download Manager (IDM) para Windows, com
 
 Clique em **Adicionar**, cole o endereço e escolha entre arquivo original, vídeo MP4 ou áudio MP3. Para mídia, selecione a resolução ou a qualidade do áudio e confirme onde salvar.
 
+O nome sugerido usa o título original do vídeo ou o nome informado pelo servidor. Você pode editar na janela Salvar. Clipes incluem o intervalo no nome e arquivos repetidos recebem um número, sem sobrescrever os existentes. Se o título não estiver disponível, o nome será baseado no link. Arquivos já baixados não são renomeados.
+
 Os novos downloads são separados em pastas por tipo: Música, Vídeos, Documentos, Compactados, Programas e Outros. Você pode mudar o destino na hora de salvar.
 
 A janela de progresso abre ao iniciar o download. Nela, dá para pausar, continuar, limitar a velocidade e ver os detalhes das conexões. Em **Opções**, você escolhe quantos downloads podem rodar ao mesmo tempo. A retomada depende do suporte do servidor.
@@ -24,7 +26,7 @@ Os formatos de saída são MP4, MKV, WebM, MP3, M4A, WAV, FLAC e OGG. É possív
 
 ## Instalação
 
-Para reparar ou atualizar uma instalação, baixe **Nocturnal-0.22.exe** na [página de lançamentos](https://github.com/yuri434/nocturnal/releases/latest), feche o Nocturnal e execute o atualizador. Ele funciona mesmo se `Nocturnal.exe` tiver sido removido e cria um backup antes de substituir o aplicativo. A fila e as ferramentas existentes são preservadas.
+Para reparar ou atualizar uma instalação, baixe **Nocturnal-0.23.exe** na [página de lançamentos](https://github.com/yuri434/nocturnal/releases/latest), feche o Nocturnal e execute o atualizador. Ele funciona mesmo se `Nocturnal.exe` tiver sido removido e cria um backup antes de substituir o aplicativo. A fila e as ferramentas existentes são preservadas.
 
 No Windows 10 ou 11, com .NET Framework 4.8 instalado, abra o PowerShell na pasta do projeto e execute:
 

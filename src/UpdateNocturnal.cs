@@ -13,9 +13,10 @@ class UpdateNocturnal {
   foreach(string name in new[]{"nocturnal.ico","nocturnal.png"}){string old=Path.Combine(root,name);if(File.Exists(old))File.Copy(old,Path.Combine(backup,name));}
   string temp=Path.Combine(root,"Nocturnal-update-"+stamp+".tmp");try{using(var input=Assembly.GetExecutingAssembly().GetManifestResourceStream("app"))using(var output=File.Create(temp)){input.CopyTo(output);}if(File.Exists(exe))File.Replace(temp,exe,Path.Combine(backup,"Nocturnal.exe"));else File.Move(temp,exe);}finally{if(File.Exists(temp))File.Delete(temp);}
   using(var input=Assembly.GetExecutingAssembly().GetManifestResourceStream("icon"))using(var output=File.Create(Path.Combine(root,"nocturnal.ico"))){input.CopyTo(output);}using(var input=Assembly.GetExecutingAssembly().GetManifestResourceStream("photo"))using(var output=File.Create(Path.Combine(root,"nocturnal.png"))){input.CopyTo(output);}
-  if(!quiet){MessageBox.Show("Nocturnal instalado.\n\nPara criar um clipe, marque Baixar somente um trecho na janela Adicionar e informe o início e o fim.\nA extensão existente continua usando nocturnal://.\n\nBackup salvo em:\n"+backup,"Nocturnal 0.22");Process.Start(exe);}Console.WriteLine("UPDATED "+exe+"\nBACKUP "+backup);return 0;
+  if(!quiet){MessageBox.Show("Nocturnal instalado.\n\nOs novos downloads usam o título do vídeo ou o nome original do arquivo. Você pode editar o nome ao salvar.\nA extensão existente continua usando nocturnal://.\n\nBackup salvo em:\n"+backup,"Nocturnal 0.23");Process.Start(exe);}Console.WriteLine("UPDATED "+exe+"\nBACKUP "+backup);return 0;
  }catch(Exception ex){if(!quiet)MessageBox.Show(ex.Message,"Instalação não concluída",MessageBoxButtons.OK,MessageBoxIcon.Error);Console.Error.WriteLine(ex.Message);return 1;}}
 }
+
 
 
 
