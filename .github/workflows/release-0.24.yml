@@ -1,0 +1,36 @@
+name: Publish Nocturnal 0.24
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/release-0.24.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Build and publish
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          ./scripts/build.ps1
+          $compiler = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
+          & $compiler /nologo /target:winexe /out:dist\Nocturnal-0.24.exe /win32icon:assets\nocturnal.ico /resource:dist\Nocturnal.exe,app /resource:assets\nocturnal.ico,icon /resource:assets\logo.png,photo /r:System.Windows.Forms.dll src\UpdateNocturnal.cs
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+          New-Item -ItemType Directory -Path package\dist,package\scripts -Force | Out-Null
+          Copy-Item dist\Nocturnal.exe,dist\nocturnal.ico,dist\nocturnal.png package\dist
+          Copy-Item scripts\install.ps1 package\scripts
+          Copy-Item README.md package
+          Compress-Archive -Path package\* -DestinationPath dist\Nocturnal-0.24.zip
+          $files = @('dist\Nocturnal-0.24.exe','dist\Nocturnal-0.24.zip')
+          $files | ForEach-Object { (Get-FileHash $_).Hash.ToLower() + '  ' + (Split-Path $_ -Leaf) } | Set-Content dist\SHA256SUMS.txt -Encoding ascii
+          $notes = 'Nova aba Recortar vídeo: escolha ou arraste um vídeo do computador, use a prévia e a linha do tempo para marcar Início e Fim e clique em Salvar trecho. O resultado é um novo MP4; o original é preservado. O destino sugerido é a pasta Clipes junto ao vídeo original. Também disponível em Ferramentas e no botão direito de downloads concluídos. Reprodução da prévia conforme suporte do Windows; alternativa por quadros para formatos incompatíveis. Testados duração do corte, reprodução, destino personalizado, arrastar arquivo, preservação do original, cancelamento e fechamento do aplicativo durante o corte. Para atualizar, feche o app e execute Nocturnal-0.24.exe. Para instalar pela primeira vez, use o ZIP e scripts/install.ps1. FFmpeg e ffprobe são obtidos separadamente, conforme o README. Os alertas da versão 0.21 continuam em investigação; a 0.24 não foi validada pelo VirusTotal.'
+          gh release create v0.24.0 @files dist\SHA256SUMS.txt --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title 'Nocturnal 0.24' --notes $notes --latest
+          if ($LASTEXITCODE -ne 0) { throw 'Release failed' }
+
+
+
