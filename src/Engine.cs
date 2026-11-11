@@ -337,7 +337,7 @@ public class Engine
 		string tools = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tools");
 		ProcessStartInfo info = new ProcessStartInfo(Path.Combine(tools, "yt-dlp.exe"))
 		{
-			Arguments = "--ignore-config --no-playlist --newline --no-colors --continue --windows-filenames --no-overwrites --socket-timeout 20 --js-runtimes " + Quote("deno:" + Path.Combine(tools, "deno.exe")) + " --ffmpeg-location " + Quote(tools) + " -N 8 " + (j.LimitKBps > 0 ? " --limit-rate " + j.LimitKBps + "K " : "") + MediaOptions(j) + ClipRange.Options(j) + " -o " + Quote(OutputTemplate(j)) + extra + " -- " + Quote(j.Url),
+			Arguments = "--ignore-config --no-playlist --newline --no-colors --continue --windows-filenames --no-overwrites --socket-timeout 20 --js-runtimes " + Quote("deno:" + Path.Combine(tools, "deno.exe")) + " --ffmpeg-location " + Quote(tools) + " -N 8 " + (j.LimitKBps > 0 ? " --limit-rate " + j.LimitKBps + "K " : "") + MediaOptions(j) + MediaDownloadProgress.Options(j) + ClipRange.Options(j) + " -o " + Quote(OutputTemplate(j)) + extra + " -- " + Quote(j.Url),
 			UseShellExecute = false,
 			CreateNoWindow = true,
 			RedirectStandardOutput = true,
@@ -352,20 +352,19 @@ public class Engine
 		try
 		{
 			j.Process = proc;
-			string last = "";
+			string last = "";var mediaProgress=new MediaDownloadProgress(j);var diagnostic=new Queue<string>();object diagnosticGate=new object();
 			proc.OutputDataReceived += delegate(object s, DataReceivedEventArgs e)
 			{
 				if (e.Data != null)
 				{
-					j.Error = e.Data;
-					j.Status = (e.Data.Contains("[download]") ? e.Data : (j.AudioOnly ? "Convertendo para MP3" : "Processando vídeo"));
+					mediaProgress.Line(e.Data);
 				}
 			};
 			proc.ErrorDataReceived += delegate(object s, DataReceivedEventArgs e)
 			{
 				if (e.Data != null)
 				{
-					last = e.Data;
+					mediaProgress.Line(e.Data);if(!Regex.IsMatch(e.Data,@"^(frame|fps|stream_\d+_\d+_q|bitrate|total_size|out_time_us|out_time_ms|out_time|dup_frames|drop_frames|speed|progress)=")){lock(diagnosticGate){diagnostic.Enqueue(e.Data);while(diagnostic.Count>12)diagnostic.Dequeue();last=string.Join(Environment.NewLine,diagnostic.ToArray());}}
 				}
 			};
 			proc.Start();
@@ -417,7 +416,7 @@ public class Engine
 		{
 			if (proc != null)
 			{
-				((IDisposable)proc).Dispose();
+				if(object.ReferenceEquals(j.Process,proc))j.Process=null;((IDisposable)proc).Dispose();
 			}
 		}
 	}
@@ -502,5 +501,7 @@ public class Program
 		}
 	}
 }
+
+
 
 

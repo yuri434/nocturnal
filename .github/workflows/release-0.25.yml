@@ -1,0 +1,37 @@
+name: Publish Nocturnal 0.25
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/release-0.25.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Build and publish
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          ./scripts/build.ps1
+          $compiler = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
+          & $compiler /nologo /target:winexe /out:dist\Nocturnal-0.25.exe /win32icon:assets\nocturnal.ico /resource:dist\Nocturnal.exe,app /resource:assets\nocturnal.ico,icon /resource:assets\logo.png,photo /r:System.Windows.Forms.dll src\UpdateNocturnal.cs
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+          New-Item -ItemType Directory -Path package\dist,package\scripts -Force | Out-Null
+          Copy-Item dist\Nocturnal.exe,dist\nocturnal.ico,dist\nocturnal.png package\dist
+          Copy-Item scripts\install.ps1 package\scripts
+          Copy-Item README.md package
+          Compress-Archive -Path package\* -DestinationPath dist\Nocturnal-0.25.zip
+          $files = @('dist\Nocturnal-0.25.exe','dist\Nocturnal-0.25.zip')
+          $files | ForEach-Object { (Get-FileHash $_).Hash.ToLower() + '  ' + (Split-Path $_ -Leaf) } | Set-Content dist\SHA256SUMS.txt -Encoding ascii
+          $notes = 'Melhora a exibição do progresso ao baixar trechos: lê as mensagens do FFmpeg e mostra o tempo processado durante o recorte. Adiciona limite de espera da conexão e tentativas limitadas, além de preservar mais detalhes de erro. Testados cortes locais MP4 e MP3 com duração correta; progresso confirmado no teste MP4. A falha intermitente relatada no YouTube ainda precisa de reprodução com o link e intervalo específicos, portanto esta versão não garante resolver todos os travamentos. Para atualizar, feche o Nocturnal e execute Nocturnal-0.25.exe. Para instalar pela primeira vez, use o ZIP e scripts/install.ps1. Ferramentas de mídia são obtidas separadamente, conforme o README. Os alertas da versão 0.21 continuam em investigação; a 0.25 não foi validada pelo VirusTotal.'
+          gh release create v0.25.0 @files dist\SHA256SUMS.txt --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title 'Nocturnal 0.25' --notes $notes --latest
+          if ($LASTEXITCODE -ne 0) { throw 'Release failed' }
+
+
+
+
